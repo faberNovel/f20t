@@ -1,0 +1,51 @@
+.statBar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px 23px;
+
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  div {
+    margin: 0;
+    float: left;
+    padding-right: 16px;
+    margin-right: 16px;
+    position: relative;
+
+    &:not(:last-of-type)::after {
+      content: "";
+      width: 1px;
+      position: absolute;
+      top: 50%;
+      bottom: 20%;
+      right: 1px;
+      background: #ccc;
+    }
+
+    &:nth-child(3n + 0) {
+      color: #E05A4F;
+    }
+
+    &:nth-child(3n + 1) {
+      color: #00BD9D;
+    }
+
+    &:nth-child(3n + 2) {
+      color: #008AFD;
+    }
+
+    h1 {
+      display: inline-block;
+      vertical-align: baseline;
+
+      span {
+        font-size: 12px;
+        color: #321000;
+      }
+    }
+  }
+}
