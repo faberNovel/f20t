@@ -30,7 +30,7 @@ const isFakeApi = (
   );
 };
 
-async function fakeFetch(url: string, config?: RequestInit): Promise<Response> {
+async function fakeAPI(url: string, config?: RequestInit): Promise<Response> {
   await sleep();
   const { query } = qs.parse(new window.URL(url).search) as {
     query?: string;
@@ -55,7 +55,7 @@ const fetch: CustomFetch = async (url: string, config?: RequestInit) => {
   if (isFakeApi(url, "GET")) {
     const groupTitle = `%c ${(config || {}).method || "GET"} -> ${url}`;
     try {
-      const response = await fakeFetch(url, config);
+      const response = await fakeAPI(url, config);
       console.groupCollapsed(groupTitle, "color: #0f9d58");
       console.info("REQUEST:", { url, ...config });
       console.info("RESPONSE:", {
