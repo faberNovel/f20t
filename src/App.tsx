@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect, useRef } from "react";
 import "./styles/global.scss";
 import styles from "./app.module.scss";
 import Header from "./templates/header";
@@ -9,6 +9,7 @@ import { getStats } from "./services/offices";
 import { getOffices } from "./services/offices";
 import StatsBar from "./templates/stats-bar/StatsBar";
 import { Stat } from "./models/stats";
+import { usePrevious } from "./support/hooks/usePrevious";
 
 type Sort = "asc" | "desc";
 
@@ -30,20 +31,16 @@ const App: FC = () => {
     }
   };
 
+  const prevQuery = usePrevious(query);
+
   useEffect(() => {
     getOffices().then((offices) => setOffices(() => offices));
     getStats().then((stats) => setStats(stats));
 
-    if (query !== undefined) {
+    if (prevQuery !== query && query !== undefined) {
       handleOfficeSearch(query);
     }
-  }, [query]);
-
-  // componentWillUpdate(_nextProps: any, nextState: State) {
-  //   if (nextState.query !== this.state.query && nextState.query !== undefined) {
-  //     handleOfficeSearch(nextState.query);
-  //   }
-  // }
+  }, [query, prevQuery]);
 
   const handleOfficeSearch = (query: string) => {
     getOffices(query).then((offices) => setOffices(() => offices));
