@@ -1,13 +1,23 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import "./styles/global.scss";
 import styles from "./app.module.scss";
 import Header from "./templates/header";
 import { Office } from "./models/offices";
+import { OfficeSearch } from "./models/offices";
+import OfficeList from "./templates/office-list/OfficeList";
+import { getStats } from "./services/offices";
+import { getOffices } from "./services/offices";
+import StatsBar from "./templates/stats-bar/StatsBar";
+import { Stat } from "./models/stats";
+import { usePrevious } from "./support/hooks/usePrevious";
 
 type Sort = "asc" | "desc";
 
 const App: FC = () => {
   const [sort, setSort] = useState<Sort>("asc");
+  const [offices, setOffices] = useState<OfficeSearch | undefined>(undefined);
+  const [query, setQuery] = useState<any>(undefined);
+  const [stats, setStats] = useState<Stat | undefined>(undefined);
 
   const handleSortToggle = () => {
     setSort(sort === "asc" ? "desc" : "asc");
@@ -21,13 +31,34 @@ const App: FC = () => {
     }
   };
 
+  const prevQuery = usePrevious(query);
+
+  const handleOfficeSearch = (query: string) => {
+    getOffices(query).then((offices) => setOffices(() => offices));
+  };
+
+  useEffect(() => {
+    getOffices().then((offices) => setOffices(() => offices));
+    getStats().then((stats) => setStats(stats));
+
+    if (prevQuery !== query && query !== undefined) {
+      handleOfficeSearch(query);
+    }
+  }, [query, prevQuery]);
+
   return (
     <div className={styles.app}>
       <Header
         sort={sort}
         onSortToggle={handleSortToggle}
-        onSearchSubmit={console.log}
+        onSearchSubmit={(query) => setQuery(query)}
       />
+      {stats && <StatsBar stats={stats} />}
+      {offices ? (
+        <OfficeList offices={offices.data.sort(sortOffices)} />
+      ) : (
+        false
+      )}
     </div>
   );
 };
